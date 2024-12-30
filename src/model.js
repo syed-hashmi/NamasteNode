@@ -2,12 +2,16 @@ const mongoose = require("mongoose");
 const { type } = require("os");
 
 const devTinderUser = new mongoose.Schema({
-  firstName: {
+  firstName: { 
     type: String,
     required: true,
+    minLength:3,
+    maxLength:50,
   },
   lastName: {
     type: String,
+    minLength:3,
+    maxLength:50,
   },
   email: {
     type: String,

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { type } = require("os");
-
+const jwt = require("jsonwebtoken");
 const devTinderUser = new mongoose.Schema({
   firstName: { 
     type: String,
@@ -50,6 +50,18 @@ const devTinderUser = new mongoose.Schema({
 },{
   timestamps:true
 });
+
+devTinderUser.methods.getJwt = function(){
+  let user= this;
+  const token = jwt.sign(
+    { _id:  user._id  },
+    "inshallah11!A",
+    {
+      expiresIn: "1d", // expires in 365 days
+    }
+  );
+  return token;
+}
 const User = mongoose.model("User", devTinderUser);
 
 module.exports = User;

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../model")
 async function authenticateWithJwt(req, res, next) {
  
   try{
@@ -8,7 +9,10 @@ async function authenticateWithJwt(req, res, next) {
   let cookie = req.cookies;
   let { token } = cookie;
   const { _id } = await jwt.verify(token, "inshallah11!A");
-  res.locals.id = _id;
+
+  let fetchedUser = await User.findById(_id);
+  
+  res.user= fetchedUser;
   //find user;;
   next();
 }

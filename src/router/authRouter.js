@@ -1,13 +1,13 @@
 const express = require("express");
-const User = require("../model");
+const User = require("../model/model");
 const bcrypt = require("bcrypt");
-const validateUsernamePassword = require("../util/validatorLogin");
+const validatorSignUp = require("../util/validation");
 
 var authRouter = express.Router();
 
 authRouter.post("/signUp", async (req, res, next) => {
   try {
-    validateUsernamePassword(req.body);
+    validatorSignUp.validatorSignUp(req.body);
 
     var passwordHash = await bcrypt.hash(req.body.password, 10);
 
@@ -61,7 +61,7 @@ authRouter.post("/login", async (req, res, next) => {
 authRouter.post("/logout",  (req, res, next)=> {
   //logout is successfull create token
   try {
-    res.cookie("token",null).send("logout successfully");
+    res.cookie("token",null,{expires:new Date(Date.now())}).send("logout successfully");
 
   } catch (error) {
     res.status(400).send(error.message);

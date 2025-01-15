@@ -22,7 +22,6 @@ requestRouter.post(
       //connection request to same user end
       //#endregion
 
-      
       //check if person is there or not in database to which we are sending connection request start
       if (!(await User.findById(toUser))) {
         return res.status(400).json({ message: "user not found" });
@@ -66,7 +65,8 @@ requestRouter.post(
       const data = await connectionRequest.save();
       if (status?.toLowerCase() == "ignored")
         res.send({
-          message:res.user.firstName+" "+status+ " "+toUserExist.firstName,
+          message:
+            res.user.firstName + " " + status + " " + toUserExist.firstName,
           data,
         });
       else
@@ -81,6 +81,45 @@ requestRouter.post(
         });
     } catch (error) {
       res.status(400).send("error: " + error.message);
+    }
+  }
+);
+
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res, next) => {
+    try {
+      const loggedInUser = res.user;
+      const {requestId,status} = req.params;
+
+      // only accepted and rejected is allowed in status (status =["accepted"] or status = ["rejected"])
+      const allowedStatus = ["accepted", "rejected"];
+
+      if (!allowedStatus.includes(status)) {
+        res.status(400).json({ message: "status is not allowed" });
+      }
+
+      //akshay => Elon
+      //is elon logged in user  (logged in user should be toUser)
+
+     const connecReq = await ConnectionRequest.findOne({_id:requestId,
+        toUser : loggedInUser?._id,
+        status: "interested"
+      }) 
+      //if the request is interested then only user can review request (status is interested)
+      //req id should be presend in the database
+      if(!connecReq){
+        return res.status(400).json({message:"connection request not found"})
+      }
+
+      connecReq.status = status;
+      connecReq.save();
+      res.json({message:"request" + status})
+
+
+    } catch (error) {
+      console.log("Error" + error);
     }
   }
 );
